@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.stockflow.dto.StockItemDto;
 import org.stockflow.entity.StockItem;
+import org.stockflow.entity.UserEntity;
 import org.stockflow.mapper.StockItemMapper;
 import org.stockflow.repository.StockItemRepository;
+import org.stockflow.repository.UserRepository;
 import org.stockflow.service.StockItemService;
 
 import java.time.LocalDateTime;
@@ -18,8 +20,11 @@ public class StockItemServiceImpl implements StockItemService {
     @Autowired
     private StockItemRepository stockItemRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
-    public void saveItem(StockItemDto item) {
+    public StockItemDto saveItem(StockItemDto item) {
         StockItem stockItem = StockItemMapper.toEntity(item);
         if (stockItem.getBarcode() == null || stockItem.getBarcode().isEmpty()) {
             String year = String.valueOf(LocalDateTime.now().getDayOfYear());
@@ -27,7 +32,9 @@ public class StockItemServiceImpl implements StockItemService {
             stockItem.setBarcode(stockItem.getType() + "-" + year + "-" + random);
         }
         StockItem saved = stockItemRepository.save(stockItem);
-        StockItemMapper.toDto(saved);
+
+        return StockItemMapper.toDto(saved);
+
     }
 
     @Override
@@ -131,5 +138,23 @@ public class StockItemServiceImpl implements StockItemService {
         return stockItemDto;
     }
 
+
+    @Override
+    public StockItemDto reassignOwner(Long itemId, Long ownerId) {
+        StockItem stockItem = stockItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        UserEntity owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        stockItem.setOwner(owner);
+        return StockItemMapper.toDto(stockItemRepository.save(stockItem));
+    }
+
+    @Override
+    public boolean existsOwner(Long ownerId) {
+        
+        return stockItemRepository.existsByOwnerId(ownerId);
+    }
 
 }

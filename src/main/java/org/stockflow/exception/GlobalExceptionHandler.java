@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
-                "NullPointerException 123",
+                "NullPointerException",
                 ex.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 request.getRequestURI()
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
-                "Internal Server Error 123",
+                "Internal Server Error",
                 ex.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 request.getRequestURI()

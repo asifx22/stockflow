@@ -7,7 +7,7 @@ import java.util.List;
 public interface StockItemService {
 
     // 🔹 Create
-    void saveItem(StockItemDto item);
+    StockItemDto saveItem(StockItemDto item);
 
     // 🔹 Read
     List<StockItemDto> getAllItems();
@@ -37,4 +37,7 @@ public interface StockItemService {
     List<StockItemDto> getStockItemByUser(Long id);
 
 
+    StockItemDto reassignOwner(Long itemId, Long ownerId);
+
+    boolean existsOwner(Long ownerId);
 }

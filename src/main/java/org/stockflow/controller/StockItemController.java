@@ -1,5 +1,6 @@
 package org.stockflow.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.stockflow.dto.StockItemDto;
 import org.stockflow.service.StockItemService;
+import org.stockflow.service.UserService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,8 +24,11 @@ public class StockItemController {
     @Autowired
     private StockItemService stockItemService;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping
-    public ResponseEntity<?> addItem(@RequestBody StockItemDto item) {
+    public ResponseEntity<?> addItem(@Valid @RequestBody StockItemDto item) {
         stockItemService.saveItem(item);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -82,6 +87,13 @@ public class StockItemController {
     public ResponseEntity<List<StockItemDto>> getUserStock(@PathVariable("id") Long id) {
         List<StockItemDto> stockItemByUser = stockItemService.getStockItemByUser(id);
         return new ResponseEntity<>(stockItemByUser, HttpStatus.FOUND);
+    }
+
+    @PutMapping("/reassign/{id}")
+    public ResponseEntity<StockItemDto> updateOwner(@PathVariable Long id, @RequestParam Long ownerId) {
+        StockItemDto stockItemDto = stockItemService.reassignOwner(id, ownerId);
+
+        return ResponseEntity.ok(stockItemDto);
     }
 
     @PostMapping("/upload-image")

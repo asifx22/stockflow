@@ -1,11 +1,15 @@
 package org.stockflow.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.stockflow.dto.DashboardSummaryDto;
 import org.stockflow.dto.UserDto;
 import org.stockflow.dto.UserItemCountDto;
+import org.stockflow.service.DashboardService;
+import org.stockflow.service.StockItemService;
 import org.stockflow.service.UserService;
 
 import java.util.List;
@@ -18,6 +22,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StockItemService stockItemService;
+
     // 🔹 Create
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
@@ -27,8 +34,16 @@ public class UserController {
 
     // 🔹 Get All Users
     @GetMapping
+    public ResponseEntity<?> getAllUser(
+            @RequestParam(defaultValue = "1", value = "pageNo") String pageNo,
+            @RequestParam(defaultValue = "10", value = "pageSize") String pageSize) {
+        Page<UserDto> userPage = userService.viewAll(pageNo, pageSize);
+        return new ResponseEntity<>(userPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/nolimit")
     public ResponseEntity<List<UserDto>> viewUsers() {
-        List<UserDto> all = userService.viewAll();
+        List<UserDto> all = userService.getAll();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
@@ -49,6 +64,9 @@ public class UserController {
     // 🔹 Delete User
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        if (stockItemService.existsOwner(id)) {
+            throw new RuntimeException("Cannot delete an Active Owner");
+        }
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
     }
@@ -83,5 +101,14 @@ public class UserController {
     public ResponseEntity<List<UserItemCountDto>> checkUserItemCount() {
         return ResponseEntity.ok(userService.getUserItemCounts());
 
+    }
+
+
+    @Autowired
+    private DashboardService dashboardService;
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardSummaryDto> getSummary() {
+        return ResponseEntity.ok(dashboardService.getDashboardSummary());
     }
 }

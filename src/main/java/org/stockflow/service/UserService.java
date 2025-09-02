@@ -1,5 +1,6 @@
 package org.stockflow.service;
 
+import org.springframework.data.domain.Page;
 import org.stockflow.dto.UserDto;
 import org.stockflow.dto.UserItemCountDto;
 
@@ -11,7 +12,9 @@ public interface UserService {
     UserDto saveUser(UserDto userDto);
 
     // 🔹 Read
-    List<UserDto> viewAll();
+    Page<UserDto> viewAll(String pageNo, String pageSize);
+
+    List<UserDto> getAll();
 
     UserDto getUser(Long id);
 
@@ -35,5 +38,6 @@ public interface UserService {
     long countAllUsers();
 
     List<UserItemCountDto> getUserItemCounts();
+
 
 }

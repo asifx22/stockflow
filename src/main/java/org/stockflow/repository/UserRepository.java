@@ -22,4 +22,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "FROM UserEntity u LEFT JOIN StockItem s ON s.owner.id = u.id " +
             "GROUP BY u.id, u.username")
     List<UserItemCountDto> getUserItemCounts();
+
+    long count();
+
+
 }

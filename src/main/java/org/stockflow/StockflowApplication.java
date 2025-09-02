@@ -10,9 +10,6 @@ public class StockflowApplication {
         SpringApplication.run(StockflowApplication.class, args);
     }
 
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
+
 }
 

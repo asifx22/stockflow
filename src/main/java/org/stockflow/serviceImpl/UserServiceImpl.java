@@ -1,12 +1,15 @@
 package org.stockflow.serviceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.stockflow.dto.UserDto;
 import org.stockflow.dto.UserItemCountDto;
 import org.stockflow.entity.UserEntity;
 import org.stockflow.enums.UserRole;
 import org.stockflow.mapper.UserMapper;
+import org.stockflow.page.Pagination;
 import org.stockflow.repository.UserRepository;
 import org.stockflow.service.UserService;
 
@@ -33,9 +36,27 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(saved);
     }
 
+    public Page<UserDto> viewAll(String pageNo, String pageSize) {
+        // 1. Create a Pageable object from the input strings
+        Pageable pageable = new Pagination().getPagination(pageNo, pageSize);
+
+        // 2. Pass the Pageable object to the repository's findAll method
+        // This fetches a Page of User entities, not a List of all entities
+        Page<UserEntity> userPage = this.userRepository.findAll(pageable);
+
+        // 3. Map the Page of User entities to a Page of User DTOs
+        // The .map() method handles the conversion for each item on the page
+        return userPage.map(UserMapper::toDto);
+    }
+
     // 🔹 Read
-    @Override
-    public List<UserDto> viewAll() {
+//    @Override
+//    public List<UserDto> getAll() {
+//        List<UserEntity> allUsers = userRepository.findAll();
+//        return allUsers.stream().(UserMapper::toDto);
+//    }
+
+    public List<UserDto> getAll() {
         return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toDto)
