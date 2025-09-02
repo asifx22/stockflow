@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UploadUtility {
+public class NoUseApp {
 
-    public static final Logger logger = LoggerFactory.getLogger(UploadUtility.class);
+    public static final Logger logger = LoggerFactory.getLogger(NoUseApp.class);
 
     @PostConstruct
     void isCheck() {
@@ -23,5 +23,7 @@ public class UploadUtility {
         System.out.println("System closed 1");
         logger.error("System is closed now");
         System.out.println("System closed 2");
+
+
     }
 }
