@@ -11,5 +11,9 @@ public class StockflowApplication {
     }
 
 
+//    @Bean
+//    public UploadUtility uploadUtility() {
+//        return new UploadUtility();
+//    }
 }
 
