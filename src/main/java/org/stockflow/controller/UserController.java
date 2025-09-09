@@ -9,10 +9,12 @@ import org.stockflow.dto.DashboardSummaryDto;
 import org.stockflow.dto.UserDto;
 import org.stockflow.dto.UserItemCountDto;
 import org.stockflow.service.DashboardService;
+import org.stockflow.service.EmailService;
 import org.stockflow.service.StockItemService;
 import org.stockflow.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200") // ✨ CHANGE 1: Crucial for allowing Angular to connect
@@ -24,6 +26,9 @@ public class UserController {
 
     @Autowired
     private StockItemService stockItemService;
+
+    @Autowired
+    private EmailService emailService;
 
     // 🔹 Create
     @PostMapping
@@ -80,9 +85,12 @@ public class UserController {
 
     // 🔹 Get by Email
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getByEmail(@PathVariable String email) {
-        UserDto user = userService.getUserByEmail(email);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<String> getByEmail(@PathVariable String email) {
+        Optional<UserDto> user = Optional.ofNullable(userService.getUserByEmail(email));
+        if (user.isPresent()) {
+            emailService.SendMail(email, "Subject body", "This is a automated test mail");
+        }
+        return ResponseEntity.ok(email);
     }
 
     // 🔹 Count Users
@@ -94,6 +102,7 @@ public class UserController {
     // 🔹 Check Email Exists
     @GetMapping("/exists/{email}")
     public ResponseEntity<Boolean> checkEmail(@PathVariable String email) {
+
         return ResponseEntity.ok(userService.emailExists(email));
     }
 
@@ -111,4 +120,5 @@ public class UserController {
     public ResponseEntity<DashboardSummaryDto> getSummary() {
         return ResponseEntity.ok(dashboardService.getDashboardSummary());
     }
+
 }
